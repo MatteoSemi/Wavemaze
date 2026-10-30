@@ -46,3 +46,12 @@ Install tooling; complete UI; test first room; complete all room logic; run per-
 
 ## Final handoff
 The complete implementation and final validation evidence are saved in Git. The working tree should be clean after the final handoff commit. No deployment or remote push was performed. Future work can begin with the two-person checklist in docs/validation.md; implementation checkpoints need not be recreated.
+
+## GitHub release — 30 October 2026
+- User subsequently authorized publishing the source and a playable website.
+- Source pushed to https://github.com/MatteoSemi/Wavemaze on main (release source b659aed).
+- Built with npm run build:pages; all asset paths target /Wavemaze/. All 47 logic tests passed.
+- Static website pushed to gh-pages at 1087eb55d16976efc776c1cc6045072b0861faf6.
+- GitHub settings API access is denied by the environment proxy (CONNECT 403). Owner must enable Pages at repository Settings → Pages, Deploy from a branch → gh-pages → / (root).
+- Expected public game URL after successful Pages deployment: https://matteosemi.github.io/Wavemaze/. Live public hosting has not been verified from this environment.
+- No environment configuration was republished during this release.
