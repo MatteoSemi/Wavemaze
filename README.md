@@ -2,6 +2,14 @@
 
 A complete 25-room, two-player cooperative puzzle adventure. Two side-by-side views share one simulation. Cool reads blue/green information; Warm reads red/amber. Talk to your partner, operate the machines, and reach both exits together.
 
+## Play online
+
+Once GitHub Pages is enabled, open https://matteosemi.github.io/Wavemaze/ in a desktop browser. No installation is needed. Two players share one keyboard; click Enter the archive to begin.
+
+One-time repository-owner setup: open https://github.com/MatteoSemi/Wavemaze/settings/pages, choose **Deploy from a branch**, select **gh-pages** and **/ (root)**, then Save. Wait for GitHub's Pages deployment to finish before opening the game link. If GitHub reports that the repository's visibility or plan does not support Pages, follow its hosting eligibility instructions.
+
+The `main` branch contains source; `gh-pages` contains the built website. `npm run build:pages` produces a build with the correct `/Wavemaze/` asset paths for this hosting location. Future releases must rebuild and update the `gh-pages` branch.
+
 ## Run locally
 
 Verified with **Node 24.19.0**, npm 11.9.0 and Chromium on Linux. Node 22.12+ or 24 is recommended.
