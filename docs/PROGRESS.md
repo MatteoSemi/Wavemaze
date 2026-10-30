@@ -28,3 +28,21 @@ Install tooling; complete UI; test first room; complete all room logic; run per-
 - Renderer inspected menu and rooms1/8/23/25. Added height-aware integer scaling to keep compact laptop view usable; screenshot refresh pending.
 - Remaining review: route resubmission invalidation12/19, readable room tips/history, final docs and UI accessibility checks.
 - Dev server started on5173 (process state not retained in snapshots). Run npm run dev to restart.
+
+## Milestone 2 — production verification and documentation
+- Full source, local fonts/artwork, README, MANUAL, architecture/editing guide, source specification, developer-only solutions and spec interpretation record completed.
+- Saved first runnable milestone commit: 9065fec.
+- Current install is repeatable: npm ci --ignore-scripts succeeded, then build and all 47 named logic/traversal/storage tests passed.
+- Production Chromium checks expanded to13: real controls/progression, held actions, privacy pixel crop, all25 rooms at3 viewports, highDPI, menus, saves and completion fixture. Latest modal top-focus fix is verified; all13 final browser checks passed with no console/page errors.
+- Reusable environment install_script and start_skill saved successfully. Environment draft requires user review/save and environment publication to retain the prepared snapshot; game has not been deployed.
+- Local development process5173 and production preview4173 are running now, but are not retained processes. Restart them as described in README.
+
+## Resume instructions
+1. Work in /workspace/Wavemaze, read README and docs/validation.md. Use existing checkout, no worktree needed.
+2. npm ci if dependencies are absent; npm test; npm run build.
+3. npm run dev -- --port 5173; production preview can use --port 4173.
+4. For browser checks start server, then GAME_URL=http://127.0.0.1:4173 npm run test:browser. Browser evidence lives in artifacts/ and docs/browser-results.json.
+5. Campaign implementation is complete; remaining product validation is human two-player testing and optional Firefox/WebKit checks. Do not report these as performed.
+
+## Final handoff
+The complete implementation and final validation evidence are saved in Git. The working tree should be clean after the final handoff commit. No deployment or remote push was performed. Future work can begin with the two-person checklist in docs/validation.md; implementation checkpoints need not be recreated.

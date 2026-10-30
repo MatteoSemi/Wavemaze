@@ -4,7 +4,7 @@ import re
 from fontTools.fontBuilder import FontBuilder
 from fontTools.pens.ttGlyphPen import TTGlyphPen
 source=Path('src/render.ts').read_text().split('const glyphs:')[1].split('function text')[0]
-glyphs=dict(re.findall(r"(?:'([^']+)'|\b([A-Z])):'([01]+)'",source)) if False else {}
+glyphs={}
 for match in re.finditer(r"(?:'([^']+)'|\b([A-Z])):'([01]+)'",source):
     glyphs[match[1] or match[2]]=match[3]
 order=['.notdef','space']+['g'+str(ord(c)) for c in glyphs]

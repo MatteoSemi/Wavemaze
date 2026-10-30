@@ -4,14 +4,14 @@ This report distinguishes independent mathematical checks, simulation replays, t
 
 ## Current run
 
-Simulation run completed on 30 October 2026 using Node 24.19.0: `node --import tsx tests/game.test.ts` — **45 named tests passed, 0 failed, 0 skipped**. The test process completed with exit code 0. Browser and rendering evidence is recorded separately below by the main implementer; simulation success alone is not browser or human-playtest evidence.
+Simulation run completed on 30 October 2026 using Node 24.19.0: `npm test` (`node --import tsx tests/game.test.ts`) — **47 named tests passed, 0 failed, 0 skipped**. The test process completed with exit code 0. Browser and rendering evidence is recorded separately below by the main implementer; simulation success alone is not browser or human-playtest evidence.
 
 ## Test method
 
 - Finite-state checks independently enumerate ordering constraints, switch parity sets, route pairs, three-crate partitions, switch assignments and complementary stencils.
 - Breadth-first search explores the actual two-courier state space for the shared movement program; it keeps couriers active after touching goals.
-- Per-room solution replays will use public simulation actions. Joint exits must remain incomplete with one player waiting, then complete only after both arrive with active final conditions.
-- Grid traversal checks will drive the movement API along collision-checked routes, rather than teleporting players.
+- Per-room solution replays use public simulation actions. Joint exits must remain incomplete with one player waiting, then complete only after both arrive with active final conditions.
+- Grid traversal checks drive the movement API along collision-checked routes, rather than teleporting players.
 - Full restart uses a fresh `createGame(level)` state, matching the UI restart implementation. Factory determinism and absence of cross-instance state leakage are checked for every room. Local reset scopes and recovery receive extra assertions for the packet and program boards, reversible switches, wrong sequences, charge dead end, routing, phased key delivery and crate supports.
 - Browser automation and visual review are maintained by the main implementer. Their results must not be inferred from these Node tests.
 
@@ -83,3 +83,24 @@ Human enjoyment, communication quality and difficulty have not been established 
 7. In rooms 24–25, verify that gated controls and final crate supports are understandable, reachable and maintainable.
 8. Test both 1280×720 and a smaller desktop window, long play sessions, pause/manual, background tabs, restart confirmation and Continue after closing the browser.
 9. Record per-room completion time, requests for help, misleading feedback, accidental solo shortcuts, recovery difficulty and moments of useful discussion. Judge productive reasoning separately from interface confusion.
+
+## Production and browser verification
+
+- `npm ci --ignore-scripts` completed from the lockfile (21 packages). This is also the saved environment install command.
+- `npm run build` passed TypeScript and Vite production bundling. The final build has local CSS, JavaScript, two fonts and favicon; no gameplay service is required.
+- `npm test` completed with 47 named tests, 0 failures and 0 skips.
+- `GAME_URL=http://127.0.0.1:4173 npm run test:browser` exercises the production preview. The final run reports 13 checks, Chromium 154.0.8037.57, and no uncaught page or console errors. Its machine-readable evidence is `browser-results.json`.
+
+Browser checks cover simultaneous held movement, one-shot action deduplication, two nearly simultaneous shared switch operations, pause/manual timer freezing, held-input clearing, restart cancellation and confirmation, a complete real-keyboard Room 1 solution with one-player waiting and joint progression to Room 2, saved Continue, duplicate-key rejection/remapping, blocked/corrupted storage, all 25 rooms rendered at 1280×720, 1920×1080 and 960×640, blur pause, and high-DPI rendering at device scale factor 2. No horizontal clipping was observed in those 75 room/viewport combinations. Long private text remains vertically scrollable when needed.
+
+The channel test compares the actual Cool canvas pixels for hidden lamp B before/after its state changes and asserts unchanged pixels and absence of the private ON reading in Cool's status. Private inscription arrays remain distinct across every room. This is a representative leakage test; code inspection also checks hidden entity values/on states and route diagrams. It is not a formal information-flow proof.
+
+The browser completion screenshot uses an explicit development-state rendering fixture, clearly separated from the real solution/traversal tests. It proves the final overlay renders, not that a human completed the campaign. Manual/settings screenshots and high-DPI output were also inspected. Firefox and Safari/WebKit were unavailable and are **untested**; Chromium does not establish their compatibility.
+
+## Visual review
+
+Actual rendered menu, rooms 1/8/23/25 at the three desktop sizes, and preview rooms 12/13/17/19/25 at 1920×1080 were inspected. The manual, settings and completion fixture were reviewed separately. The art uses material-coloured stone/wood edges, two gold door straps with square rivets, a stepped arch and ring handle; dungeon sprites and floors adapt the references to a coherent small grid. Both views use identical integer canvas scale with smoothing disabled. Cool's hood/diamond and Warm's cap/square provide redundant character identity. There are no stock watermarks, remote fonts, gradients or soft lighting effects in new assets.
+
+Issues found and corrected: a missing favicon caused one browser console error; fixed with a local icon. Full-width fractional title-canvas scaling was capped to native 512 pixels at desktop sizes. The first 2× laptop layout pushed key controls far below the fold; short windows now use matching 1× room canvases. Small explanatory type now uses the companion font. Slot/cradle/station IDs were clarified. Route wires were rerouted around unrelated junctions. Manual focus previously scrolled its initial view to the bottom; it now focuses the dialog at scroll position zero.
+
+**Remaining visual/usability limits:** 1× room labels are small in short windows, with the nearest-device HUD providing readable names; use a taller window for 2× art. Very long late-room status/history or inscriptions may require vertical scrolling, with both views retained side by side. The documented palette is an intentional blue-slate adaptation rather than an exact copy of the purple dungeon reference. Bundled GIF frame-by-frame and skill integrity checks were unavailable; source reference matching is visual, not a claim of recovered exact texels. No human two-person testing, physical keyboard rollover, long-session difficulty or enjoyment study has been performed.

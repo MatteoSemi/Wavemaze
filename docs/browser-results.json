@@ -1,0 +1,20 @@
+{
+  "browser": "154.0.8037.57",
+  "engine": "Chromium",
+  "checks": [
+    "Menu and both local fonts load",
+    "Simultaneous continuous input and one-shot interaction",
+    "Manual freezes timer, closes and clears held input",
+    "Restart dialog cancels safely and resets both roles when confirmed",
+    "Real keyboard solution opens both exits and waits for joint departure",
+    "Progress persists and Continue restores a fresh consistent room",
+    "Held actions fire once; simultaneous shared operations compose without lost input",
+    "Bindings reject duplicates and save unique physical keys",
+    "All 25 rooms render with distinct inscriptions and no horizontal clipping",
+    "Private lamp readings do not leak through hidden-channel canvas pixels",
+    "Manual, settings, final completion fixture and high-DPI rendering",
+    "Backgrounding pauses and does not replay stale keys",
+    "Corrupted and unavailable storage do not prevent play"
+  ],
+  "errors": []
+}

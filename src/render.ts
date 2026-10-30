@@ -125,7 +125,7 @@ function device(c: Context,e: any,p:PlayerId,g:Game,time:number) {
   if(kind.includes('crate')) { crate(c,x,y,label,C.cream); if(value) { rect(c,x+12,y-4,value.length*6+2,9,C.ink); text(c,value,x+13,y-3,a); } return; }
   if(kind.includes('pad')||kind.includes('cradle')||kind.includes('dock')) {
     rect(c,x+1,y+7,14,8,C.ink); rect(c,x+2,y+7,12,6,C.stoneDark); rect(c,x+3,y+8,10,3,active?a:C.grey);
-    rect(c,x+1,y+6,2,3,C.stone); rect(c,x+13,y+6,2,3,C.stone); if(label) text(c,label.slice(0,1),x+6,y+1,C.cream); return;
+    rect(c,x+1,y+6,2,3,C.stone); rect(c,x+13,y+6,2,3,C.stone); if(label) text(c,label.slice(0,3),x+8-Math.min(label.length,3)*3,y-1,C.cream); return;
   }
   if(kind.includes('lamp')) {
     rect(c,x+5,y+8,6,6,C.stoneDark); rect(c,x+4,y+3,8,7,C.ink); rect(c,x+5,y+2,6,7,active?a:C.grey);
@@ -189,6 +189,48 @@ function device(c: Context,e: any,p:PlayerId,g:Game,time:number) {
   rect(c,x+7,y+3,2,1,active?C.cream:C.woodLight); rect(c,x+4,y+12,1,1,C.cream); rect(c,x+11,y+12,1,1,C.cream);
   if(label && label.length<=3) { rect(c,x+4,y-5,Math.min(label.length*6,18),9,C.ink); text(c,label,x+5,y-4,C.cream); }
 }
+type PixelPoint = [number, number];
+function wire(c:Context,points:PixelPoint[],colour:string,arrow=false) {
+  for(let i=1;i<points.length;i++) {
+    const [x1,y1]=points[i-1],[x2,y2]=points[i];
+    rect(c,Math.min(x1,x2)-1,Math.min(y1,y2)-1,Math.abs(x2-x1)+2,Math.abs(y2-y1)+2,colour);
+  }
+  if(arrow&&points.length>1) {
+    const [x,y]=points[points.length-1],[px,py]=points[points.length-2];
+    const dx=Math.sign(x-px),dy=Math.sign(y-py),ax=x-dx*10,ay=y-dy*10;
+    if(dx) {rect(c,ax-dx*2,ay-3,1,7,colour);rect(c,ax-dx,ay-2,1,5,colour);rect(c,ax,ay-1,1,3,colour);}
+    else {rect(c,ax-3,ay-dy*2,7,1,colour);rect(c,ax-2,ay-dy,5,1,colour);rect(c,ax-1,ay,3,1,colour);}
+  }
+}
+function junction(c:Context,label:string,x:number,y:number) {
+  rect(c,x-5,y-6,12,13,C.ink);rect(c,x-4,y-5,10,11,C.stoneDark);
+  text(c,label,x-1,y-3,C.cream);
+}
+function routePreview(c:Context,g:Game,p:PlayerId) {
+  const selected=g.state.routes[p],accent=p===0?C.cool:C.warm,dim=p===0?C.coolDark:C.warmDark;
+  const committed=g.level===25?g.state.supply:g.solved;
+  if(g.level===12) {
+    const routes:PixelPoint[][] = p===0
+      ? [[[40,56],[72,56],[120,56],[136,56],[136,66],[216,66],[216,56]],[[40,56],[40,80],[72,80],[168,80],[216,80],[216,56]]]
+      : [[[40,56],[72,56],[88,56],[88,80],[168,80],[216,80],[216,56]],[[40,56],[40,40],[120,40],[120,56],[184,56],[216,56]]];
+    wire(c,routes[1-selected],dim);wire(c,routes[selected],committed?accent:dim);
+    for(const [label,x,y] of [['A',72,56],['B',72,80],['C',120,56],['D',168,80],['E',184,56]] as [string,number,number][])junction(c,label,x,y);
+    rect(c,34,50,8,13,C.stone);rect(c,35,51,2,3,accent);
+    rect(c,213,50,9,13,C.stoneDark);rect(c,216,53,3,7,committed?accent:C.grey);
+    // A selected preview is marked physically without exposing the partner’s route.
+    const route=routes[selected];for(const [x,y] of route.slice(1,-1))rect(c,x-1,y-1,3,3,accent);
+    text(c,committed?'BEAM POWERED':'PREVIEW',committed?81:96,28,committed?accent:C.stoneLight);
+  } else {
+    const compact=g.level===25;
+    const x1=compact?48:48,x2=compact?104:192,y=compact?116:48,lower=y+(compact?22:30),hx=compact?76:128;
+    const routes:PixelPoint[][]=[[[x1,y],[hx,y],[x2,y]],[[x1,y],[x1,lower],[x2,lower],[x2,y]]];
+    wire(c,routes[1-selected],dim);wire(c,routes[selected],accent);
+    junction(c,'H',hx,y);rect(c,x1-4,y-5,7,11,C.stoneDark);rect(c,x1-3,y-4,2,2,accent);
+    rect(c,x2-3,y-5,7,11,C.stoneDark);rect(c,x2-1,y-3,3,6,committed?accent:C.grey);
+    text(c,'2',hx+12,y-12,accent);text(c,p===0?'4':'3',hx+10,lower+4,accent);
+    if(!compact)text(c,committed?'ROUTE POWERED':'ROUTE PREVIEW',80,24,committed?accent:C.stoneLight);
+  }
+}
 function corners(c:Context,x:number,y:number,colour:string) {
   for(const [dx,dy,sx,sy] of [[0,0,1,1],[16,0,-1,1],[0,16,1,-1],[16,16,-1,-1]]) {
     rect(c,x+dx+(sx<0?-4:0),y+dy,4,1,colour); rect(c,x+dx,y+dy+(sy<0?-4:0),1,4,colour);
@@ -213,6 +255,14 @@ export function draw(canvas: HTMLCanvasElement,g:Game,p:PlayerId,time:number) {
       if(tile==='closed') { rect(c,xx+2,yy+2,12,12,C.stoneDark); rect(c,xx+4,yy+4,8,8,C.mortar); rect(c,xx+6,yy+6,4,4,C.grey); }
       if(tile==='exit') { rect(c,xx+4,yy+11,8,2,C.gold); rect(c,xx+6,yy+9,4,2,C.gold); }
     }
+  }
+  if([12,19,25].includes(g.level))routePreview(c,g,p);
+  if(g.level===17) {
+    const accent=p===0?C.cool:C.warm;
+    const links:PixelPoint[][]=p===0
+      ? [[[104,72],[152,72]],[[184,104],[200,104],[200,72]]]
+      : [[[56,104],[56,72],[104,72]],[[56,104],[56,136],[104,136]],[[104,136],[56,136],[56,104]],[[152,72],[184,72],[184,104]]];
+    for(const link of links)wire(c,link,accent,true);
   }
   if(g.level===14) {
     for(let i=0;i<3;i++) {
